@@ -19,6 +19,7 @@ fadeGallery = {
     // Show first img
     fadeGallery.array[0].show();
     fadeGallery.arrayPosition = 0;
+    fadeGallery.updateTitle();
     
     // Click handlers
     $("#fadeGallery-nav a.prev").click(function() {
