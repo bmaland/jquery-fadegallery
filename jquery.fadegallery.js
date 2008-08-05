@@ -1,19 +1,26 @@
-/* jQuery Fade Gallery
+/* jQuery Fade Gallery, version 0.3
  * Copyright 2008 Bjørn Arild Mæland (bjorn.maeland at gmail.com)
  * MIT License: http://www.opensource.org/licenses/mit-license.php
  */
 
 fadeGallery = {
   options: {
-		"animationSpeed": 1200
+		"animationSpeed": 1200,
+		"autoChangeSpeed": 3500
 	},
 	
   init: function() {
+    var images = $("#fadeGallery ul li img");
+    fadeGallery.active = (images.length > 0) ? true : false;
+    fadeGallery.automated = false;
     fadeGallery.array = [];
+    
+    if (!fadeGallery.active) return;
+    
     // Add images to our array and set css properties
-    $("#fadeGallery img").each(function (i) {
-      fadeGallery.array.push($(this));
+    images.each(function () {
       $(this).css({display: "none", position: "absolute", top: 0, zIndex: 0});
+      fadeGallery.array.push($(this));
     });
     
     // Show first img
@@ -22,14 +29,20 @@ fadeGallery = {
     fadeGallery.updateTitle();
     
     // Click handlers
-    $("#fadeGallery-nav a.prev").click(function() {
-      fadeGallery.changeImage(-1);
-      return false;
-    });
-    $("#fadeGallery-nav a.next").click(function() {
-      fadeGallery.changeImage(1);
-      return false;
-    });
+    if (! $("#fadeGallery a").length > 0) { // No controls defined, turn on automated image transition
+      fadeGallery.automated = true;
+      window.setTimeout("fadeGallery.changeImage(1)", fadeGallery.options["animationSpeed"] +
+                                                      fadeGallery.options["autoChangeSpeed"]);
+    } else {
+      $("#fadeGallery a.prev").click(function() {
+        fadeGallery.changeImage(-1);
+        return false;
+      });
+      $("#fadeGallery a.next").click(function() {
+        fadeGallery.changeImage(1);
+        return false;
+      });
+    }
   },
   
   current: function() {
@@ -37,18 +50,26 @@ fadeGallery = {
   },
   
   updateTitle: function() {
-    $("#fadeGallery-nav p.title").html(fadeGallery.current().attr("title"));
+    var e = $("#fadeGallery .title");
+    if (e.length > 0) {
+      e.html(fadeGallery.current().attr("title"));
+    }
   },
   
   changeImage: function(change) {
-    fadeGallery.current().fadeOut(fadeGallery.options["animationSpeed"], function() { $(this).hide(); });
-    fadeGallery.current().removeClass("visible");
-    
-    fadeGallery.arrayPosition = ((fadeGallery.arrayPosition + change) + fadeGallery.array.length) % fadeGallery.array.length;
+    fadeGallery.current().fadeOut();
+
+    fadeGallery.arrayPosition = ((fadeGallery.arrayPosition + change) + fadeGallery.array.length) %
+                                  fadeGallery.array.length;
     
     fadeGallery.current().fadeIn(
       fadeGallery.options["animationSpeed"], function() { fadeGallery.updateTitle(); }
     );
+
+    if (fadeGallery.automated && fadeGallery.active) {
+      window.setTimeout("fadeGallery.changeImage(1)", fadeGallery.options["animationSpeed"] +
+                                                      fadeGallery.options["autoChangeSpeed"]);
+    }
   }
 }
 
