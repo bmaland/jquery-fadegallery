@@ -57,7 +57,7 @@ fadeGallery = {
   },
   
   changeImage: function(change) {
-    fadeGallery.current().fadeOut();
+    fadeGallery.current().fadeOut(fadeGallery.options["animationSpeed"]);
 
     fadeGallery.arrayPosition = ((fadeGallery.arrayPosition + change) + fadeGallery.array.length) %
                                   fadeGallery.array.length;
